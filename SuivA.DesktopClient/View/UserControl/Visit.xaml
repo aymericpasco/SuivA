@@ -1,0 +1,96 @@
+﻿<UserControl x:Class="SuivA.DesktopClient.View.UserControl.Visit"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="clr-namespace:SuivA.DesktopClient.View.UserControl"
+             xmlns:viewModel="clr-namespace:SuivA.DesktopClient.ViewModel"
+             xmlns:data="clr-namespace:SuivA.Data;assembly=SuivA.Data"
+             xmlns:system="clr-namespace:System;assembly=mscorlib"
+             xmlns:entity="clr-namespace:SuivA.Data.Entity;assembly=SuivA.Data"
+             mc:Ignorable="d"
+             d:DataContext="{d:DesignInstance viewModel:VisitViewModel}"
+             d:DesignHeight="720" d:DesignWidth="1280">
+
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="VisibilityConverter" />
+        <Style TargetType="Label">
+            <Setter Property="Padding" Value="0" />
+        </Style>
+    </UserControl.Resources>
+
+    <DockPanel Margin="30">
+        <DockPanel DockPanel.Dock="Left" Width="600" Margin="0,0,30,0">
+            <TextBlock DockPanel.Dock="Top">
+                <Button Command="{Binding AddCommand}">Ajouter une nouvelle visite</Button>
+                <Button Command="{Binding GetVisitListCommand}">Rafraichir la liste de visites</Button>
+            </TextBlock>
+            <ListBox ItemsSource="{Binding Visits}" SelectedItem="{Binding SelectedVisit}">
+                <ListBox.Resources>
+                    <DataTemplate DataType="{x:Type entity:Visit}">
+                        <TextBlock>
+                            <Run FontWeight="Bold" Text="{Binding VisitDate, StringFormat={}{0:dd}/{0:MM}/{0:yy}}" />
+                            <Run FontWeight="Bold">:</Run>
+                            <Run Text="{Binding Doctor.Firstname}" />
+                            <Run Text="{Binding Doctor.Lastname}" />
+                            <Run FontWeight="DemiBold">Rdv:</Run>
+                            <Run Text="{Binding Appointment}" />
+                            <Run FontWeight="DemiBold">Heures:</Run>
+                            <Run Text="{Binding ArrivingTime, StringFormat={}{0:hh}:{0:mm}}" />
+                            <Run Text="{Binding StartTimeInterview, StringFormat={}{0:hh}:{0:mm}}" />
+                            <Run Text="{Binding DepartureTime, StringFormat={}{0:hh}:{0:mm}}" />
+                        </TextBlock>
+                    </DataTemplate>
+                </ListBox.Resources>
+            </ListBox>
+        </DockPanel>
+        <StackPanel DockPanel.Dock="Right"
+                    Visibility="{Binding CanModify, Converter={StaticResource VisibilityConverter}}">
+            <Label Margin="0, 5, 0, 5">Date de la visite</Label>
+            <DatePicker Margin="0, 5, 0, 5"
+                        SelectedDate="{Binding SelectedVisit.VisitDate, TargetNullValue={x:Static system:DateTime.Now}, 
+                ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged }" />
+
+            <CheckBox Margin="0, 5, 0, 5" x:Name="checkBox" Content="Sur rendez-vous ?"
+                      IsChecked="{Binding SelectedVisit.Appointment, ValidatesOnDataErrors=True, 
+                UpdateSourceTrigger=PropertyChanged}" />
+
+            <Label Margin="0, 5, 0, 5">Heure d'arrivée (heure:minutes)</Label>
+            <TextBox Margin="0, 5, 0, 5"
+                     Text="{Binding SelectedVisit.ArrivingTime, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged, 
+                StringFormat={}{0:hh}:{0:mm}}" />
+
+            <Label Margin="0, 5, 0, 5">Heure de début de l'entretien (heure:minutes)</Label>
+            <TextBox Margin="0, 5, 0, 5"
+                     Text="{Binding SelectedVisit.StartTimeInterview, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged, 
+                StringFormat={}{0:hh}:{0:mm}}" />
+
+            <Label Margin="0, 5, 0, 5">Heure de départ (heure:minutes)</Label>
+            <TextBox Margin="0, 5, 0, 5"
+                     Text="{Binding SelectedVisit.DepartureTime, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged, 
+                StringFormat={}{0:hh}:{0:mm}}" />
+
+            <Label Margin="0, 5, 0, 5">Médecin visité</Label>
+            <ComboBox Margin="0, 5, 0, 5" ItemsSource="{Binding Doctors}" SelectedItem="{Binding SelectedVisit.Doctor}">
+                <ComboBox.ItemTemplate>
+                    <DataTemplate DataType="{x:Type entity:Doctor}">
+                        <TextBlock>
+                            <TextBlock.Text>
+                                <MultiBinding StringFormat="{}{0} {1}">
+                                    <Binding Path="Firstname" />
+                                    <Binding Path="Lastname" />
+                                </MultiBinding>
+                            </TextBlock.Text>
+                        </TextBlock>
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
+            </ComboBox>
+
+            <TextBlock Margin="0, 5, 0, 5">
+                <Button Command="{Binding UpdateCommand}">Mettre à jour</Button>
+                <Button Command="{Binding DeleteCommand}">Supprimer</Button>
+            </TextBlock>
+        </StackPanel>
+    </DockPanel>
+
+</UserControl>

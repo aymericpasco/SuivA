@@ -1,0 +1,81 @@
+﻿<UserControl x:Class="SuivA.DesktopClient.View.UserControl.Office"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="clr-namespace:SuivA.DesktopClient.View.UserControl"
+             xmlns:viewModel="clr-namespace:SuivA.DesktopClient.ViewModel"
+             xmlns:data="clr-namespace:SuivA.Data;assembly=SuivA.Data"
+             xmlns:system="clr-namespace:System;assembly=mscorlib"
+             xmlns:entity="clr-namespace:SuivA.Data.Entity;assembly=SuivA.Data"
+             xmlns:service="clr-namespace:SuivA.DesktopClient.Service"
+             mc:Ignorable="d"
+             d:DataContext="{d:DesignInstance viewModel:OfficeViewModel}"
+             d:DesignHeight="720" d:DesignWidth="1280">
+
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="VisibilityConverter" />
+        <Style TargetType="Label">
+            <Setter Property="Padding" Value="0" />
+        </Style>
+    </UserControl.Resources>
+
+    <DockPanel Margin="30">
+        <DockPanel DockPanel.Dock="Left" Width="600" Margin="0,0,30,0">
+            <TextBlock DockPanel.Dock="Top">
+                <Button Command="{Binding AddCommand}">Ajouter un nouveau cabinet</Button>
+                <Button Command="{Binding GetOfficeListCommand}">Rafraichir la liste des cabinets</Button>
+            </TextBlock>
+            <ListBox ItemsSource="{Binding Offices}" SelectedItem="{Binding SelectedOffice}">
+                <ListBox.Resources>
+                    <DataTemplate DataType="{x:Type entity:Office}">
+                        <TextBlock>
+                            <Run FontWeight="SemiBold" Text="{Binding StreetNumber}" />
+                            <Run FontWeight="SemiBold" Text="{Binding StreetName}" />
+                            <Run FontWeight="SemiBold">,</Run>
+                            <Run FontWeight="SemiBold" Text="{Binding ZipCode}" />
+                            <Run FontWeight="SemiBold" Text="{Binding City}" />
+                        </TextBlock>
+                    </DataTemplate>
+                </ListBox.Resources>
+            </ListBox>
+        </DockPanel>
+        <StackPanel DockPanel.Dock="Right"
+                    Visibility="{Binding CanModify, Converter={StaticResource VisibilityConverter}}">
+            <Label Margin="0, 5, 0, 5">Numéro de rue</Label>
+            <TextBox Margin="0, 5, 0, 5"
+                     Text="{Binding SelectedOffice.StreetNumber, ValidatesOnDataErrors=True, 
+                UpdateSourceTrigger=PropertyChanged}" />
+
+            <Label Margin="0, 5, 0, 5">Nom de rue</Label>
+            <TextBox Margin="0, 5, 0, 5"
+                     Text="{Binding SelectedOffice.StreetName, ValidatesOnDataErrors=True, 
+                UpdateSourceTrigger=PropertyChanged}" />
+
+            <Label Margin="0, 5, 0, 5">Code postal</Label>
+            <TextBox Margin="0, 5, 0, 5"
+                     Text="{Binding SelectedOffice.ZipCode, ValidatesOnDataErrors=True, 
+                UpdateSourceTrigger=PropertyChanged}" />
+
+            <Label Margin="0, 5, 0, 5">Ville</Label>
+            <TextBox Margin="0, 5, 0, 5"
+                     Text="{Binding SelectedOffice.City, ValidatesOnDataErrors=True, 
+                UpdateSourceTrigger=PropertyChanged}" />
+
+
+            <TextBlock Margin="0, 5, 0, 5">
+                <Button Command="{Binding UpdateCommand}">Mettre à jour</Button>
+            </TextBlock>
+
+            <Label Margin="0, 5, 0, 5">Latitude</Label>
+            <TextBlock Margin="0, 5, 0, 5"
+                       Text="{Binding SelectedOffice.Gps.Latitude}" />
+
+            <Label Margin="0, 5, 0, 5">Longitude</Label>
+            <TextBlock Margin="0, 5, 0, 5"
+                       Text="{Binding SelectedOffice.Gps.Longitude}" />
+
+
+        </StackPanel>
+    </DockPanel>
+</UserControl>
